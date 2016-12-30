@@ -9,7 +9,12 @@ import java.util.List;
 
 import quatja.com.vorolay.GrahamScan;
 
-
+/**
+ *
+ * Voronoi region allows to work with each diagram element
+ *
+ * Created by quatja
+ */
 public class VoronoiRegion {
     public List<VoronoiLine> edges = new ArrayList<>();
     public VoronoiPoint site;

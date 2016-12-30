@@ -26,6 +26,8 @@ import quatja.com.vorolay.diagram.VoronoiRegion.VoronoiPoint;
  * Voronoi diagram regions.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Check wiki</a>
+ *
+ * Created by quatja
  */
 public class VoronoiView extends ViewGroup {
 
@@ -516,12 +518,8 @@ public class VoronoiView extends ViewGroup {
 
     private void generateCustomPoints(double[] arrayX, double[] arrayY) {
 
-        if (mCustomPoints.size() != mRegionsCount) {
-            try {
-                throw new Exception("The custom points count is not equals to a regions count");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+        if (mCustomPoints == null || mCustomPoints.size() != mRegionsCount) {
+            throw new RuntimeException("The custom points count is not equals to a regions count");
         }
 
         for (int i = 0; i < mCustomPoints.size(); i++) {
