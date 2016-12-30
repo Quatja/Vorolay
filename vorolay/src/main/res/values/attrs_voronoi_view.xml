@@ -1,0 +1,15 @@
+<resources>
+    <declare-styleable name="VoronoiView">
+        <attr name="show_border" format="boolean" />
+        <attr name="border_color" format="color" />
+        <attr name="border_width" format="float" />
+        <attr name="border_round" format="boolean" />
+
+        <attr name="generation_type">
+            <enum name="random" value="1" />
+            <enum name="ordered" value="2" />
+            <enum name="custom" value="3" />
+        </attr>
+
+    </declare-styleable>
+</resources>

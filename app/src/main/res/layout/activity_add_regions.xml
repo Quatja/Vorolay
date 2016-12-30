@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="@color/colorPrimaryDark">
+
+    <Button
+        android:id="@+id/main_button"
+        android:layout_width="100dp"
+        android:layout_height="70dp"
+        android:layout_centerHorizontal="true"
+        android:text="Add a region"/>
+
+
+
+    <quatja.com.vorolay.VoronoiView
+        android:id="@+id/voronoi"
+        android:layout_below="@+id/main_button"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        app:border_color="@color/colorAccent"
+        app:border_width="7"
+        app:generation_type="ordered"
+        />
+
+
+</RelativeLayout>
