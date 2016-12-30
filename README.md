@@ -1,6 +1,10 @@
 # Vorolay
-
+<br>
+[![](https://jitpack.io/v/Quatja/Vorolay.svg)](https://jitpack.io/#Quatja/Vorolay)
+<br>
+<br>
 VoronoiView is a view (ViewGroup) that allows you to add and display views inside Voronoi diagram regions. [Voronoi diagram] (https://en.wikipedia.org/wiki/Voronoi_diagram)
+
 
 ## Screenshots
 ![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_1.png "Simple diagram")
