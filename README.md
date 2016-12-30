@@ -2,6 +2,13 @@
 
 VoronoiView is a view (ViewGroup) that allows you to add and display views inside Voronoi diagram regions. [Voronoi diagram] (https://en.wikipedia.org/wiki/Voronoi_diagram)
 
+## Screenshots
+![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_1.png "Simple diagram")
+![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_2.png "Settings")
+![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_3.png "List view")
+![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_4.png "Custom views")
+
+
 
 
 <br>
@@ -78,7 +85,7 @@ Do not use tags for the children <br>
 
 ## Acknowledgements
 Steven Fortune - algorithm author <br>
-Zhenyu Pan - Forutne algorithm version <br>
+Zhenyu Pan - Forutne algorithm Java version <br>
 Bart Kiers - Graham Scan realization <br>
 
 
