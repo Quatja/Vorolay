@@ -1,5 +1,6 @@
 # Vorolay
 <br>
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![](https://jitpack.io/v/Quatja/Vorolay.svg)](https://jitpack.io/#Quatja/Vorolay)
 <br>
 <br>
