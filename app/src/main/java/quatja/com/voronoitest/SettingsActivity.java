@@ -14,8 +14,8 @@ import quatja.com.vorolay.VoronoiView;
 
 public class SettingsActivity extends AppCompatActivity {
 
-    VoronoiView voronoiView;
-    int region_count = 30;
+    private VoronoiView voronoiView;
+    private int region_count = 30;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {

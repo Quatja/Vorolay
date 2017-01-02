@@ -13,9 +13,9 @@ import quatja.com.vorolay.VoronoiView;
 
 public class SimpleListActivity extends AppCompatActivity {
 
-    LayoutInflater layoutInflater;
+    private LayoutInflater layoutInflater;
 
-    String[] elems = {
+    private String[] elems = {
             "Element 1", "Element 2", "Element 3", "Element 4", "Element 5",
             "Element 6", "Element 7", "Element 8", "Element 9", "Element 10",
             "Element 11", "Element 12"
@@ -83,8 +83,8 @@ public class SimpleListActivity extends AppCompatActivity {
     }
 
     static class ViewHolder {
-        VoronoiView voronoi;
-        TextView textView;
+        private VoronoiView voronoi;
+        private TextView textView;
     }
 
 }

@@ -50,7 +50,7 @@ public class VoronoiView extends ViewGroup {
 
 
     /*
-    DEFAULTS
+     *   DEFAULTS
      */
     final static private boolean DEF_BORDERS = true;
     final static private int DEF_BORDERS_COLOR = Color.LTGRAY;
@@ -60,22 +60,9 @@ public class VoronoiView extends ViewGroup {
 
 
 
-
-
-
-    /**
-     * Interface definition for a callback to be invoked when a Voronoi diagram region is clicked
+    /*
+     *   FIELDS
      */
-    public interface OnRegionClickListener {
-        /**
-         * Callback method to be invoked when a region in this VoronoiView has
-         * been clicked.
-         * @param view The region view which was clicked
-         * @param position The position of the region
-         */
-        void onClick(View view, int position);
-    }
-
 
     private Paint p;
 
@@ -97,6 +84,21 @@ public class VoronoiView extends ViewGroup {
     private boolean mRoundCornersEnabled;
     private int mGenerationType;
 
+
+
+
+    /**
+     * Interface definition for a callback to be invoked when a Voronoi diagram region is clicked
+     */
+    public interface OnRegionClickListener {
+        /**
+         * Callback method to be invoked when a region in this VoronoiView has
+         * been clicked.
+         * @param view The region view which was clicked
+         * @param position The position of the region
+         */
+        void onClick(View view, int position);
+    }
 
 
     /*

@@ -37,7 +37,7 @@ public final class GrahamScan {
     /**
      * An enum denoting a directional-turn between 3 points (vectors).
      */
-    protected static enum Turn { CLOCKWISE, COUNTER_CLOCKWISE, COLLINEAR }
+    private enum Turn { CLOCKWISE, COUNTER_CLOCKWISE, COLLINEAR }
 
     /**
      * Returns true iff all points in <code>points</code> are collinear.
@@ -45,7 +45,7 @@ public final class GrahamScan {
      * @param points the list of points.
      * @return       true iff all points in <code>points</code> are collinear.
      */
-    protected static boolean areAllCollinear(List<VoronoiPoint> points) {
+    private static boolean areAllCollinear(List<VoronoiPoint> points) {
 
         if(points.size() < 2) {
             return true;
@@ -86,7 +86,7 @@ public final class GrahamScan {
             throw new IllegalArgumentException("xs and ys don't have the same size");
         }
 
-        List<VoronoiPoint> points = new ArrayList<VoronoiPoint>();
+        List<VoronoiPoint> points = new ArrayList<>();
 
         for(int i = 0; i < xs.length; i++) {
             points.add(new VoronoiPoint(xs[i], ys[i]));
@@ -148,7 +148,7 @@ public final class GrahamScan {
         // close the hull
         stack.push(sorted.get(0));
 
-        return new ArrayList<VoronoiPoint>(stack);
+        return new ArrayList<>(stack);
     }
 
     /**
@@ -160,7 +160,7 @@ public final class GrahamScan {
      *               1 such point exists, the one with the lowest x coordinate
      *               is returned.
      */
-    protected static VoronoiPoint getLowestPoint(List<VoronoiPoint> points) {
+    private static VoronoiPoint getLowestPoint(List<VoronoiPoint> points) {
 
         VoronoiPoint lowest = points.get(0);
 
@@ -187,7 +187,7 @@ public final class GrahamScan {
      * @return       a sorted set of points from the list <code>points</code>.
      * @see GrahamScan#getLowestPoint(java.util.List)
      */
-    protected static Set<VoronoiPoint> getSortedPointSet(List<VoronoiPoint> points) {
+    private static Set<VoronoiPoint> getSortedPointSet(List<VoronoiPoint> points) {
 
         final VoronoiPoint lowest = getLowestPoint(points);
 
@@ -249,7 +249,7 @@ public final class GrahamScan {
      *         ordered points <code>a</code>, <code>b</code> and
      *         <code>c</code>.
      */
-    protected static Turn getTurn(VoronoiPoint a, VoronoiPoint b, VoronoiPoint c) {
+    private static Turn getTurn(VoronoiPoint a, VoronoiPoint b, VoronoiPoint c) {
 
         // use longs to guard against int-over/underflow
         double crossProduct = ((b.x - a.x) * (c.y - a.y)) -

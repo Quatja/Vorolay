@@ -14,10 +14,10 @@ import quatja.com.vorolay.VoronoiView;
 
 public class AddRegionsActivity extends AppCompatActivity {
 
-    LayoutInflater layoutInflater;
-    VoronoiView voronoiView;
+    private LayoutInflater layoutInflater;
+    private VoronoiView voronoiView;
 
-    int count = 16;
+    private int count = 16;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -29,7 +29,6 @@ public class AddRegionsActivity extends AppCompatActivity {
         voronoiView = (VoronoiView) findViewById(R.id.voronoi);
         Button mainButton = (Button) findViewById(R.id.main_button);
 
-        final Random rand = new Random();
         for (int i = 0; i < count; i++) {
             View view = layoutInflater.inflate(R.layout.item_voronoi_2, null, false);
             voronoiView.addView(view);
