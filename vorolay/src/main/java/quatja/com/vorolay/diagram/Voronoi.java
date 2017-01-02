@@ -626,14 +626,14 @@ public class Voronoi
             }
         }
         /* Now search linear list of halfedges for the correct one */
-        if (he == ELleftend || (he != ELrightend && right_of(he, p)))
+        if (he == ELleftend || (he != ELrightend && rightOf(he, p)))
         {
             // keep going right on the list until either the end is reached, or
             // you find the 1st edge which the point isn't to the right of
             do
             {
                 he = he.ELright;
-            } while (he != ELrightend && right_of(he, p));
+            } while (he != ELrightend && rightOf(he, p));
             he = he.ELleft;
         } else
         // if the point is to the left of the HalfEdge, then search left for
@@ -642,7 +642,7 @@ public class Voronoi
             do
             {
                 he = he.ELleft;
-            } while (he != ELleftend && !right_of(he, p));
+            } while (he != ELleftend && !rightOf(he, p));
         }
 
         /* Update hash table and reference counts */
@@ -668,8 +668,14 @@ public class Voronoi
 
     private void clipLine(Edge e)
     {
-        double pxmin, pxmax, pymin, pymax;
-        Site s1, s2;
+        Site s1;
+        Site s2;
+
+        double pxmin;
+        double pxmax;
+        double pymin;
+        double pymax;
+
         double x1;
         double x2;
         double y1;
@@ -810,13 +816,14 @@ public class Voronoi
     }
 
     /* returns 1 if p is to right of halfedge e */
-    private boolean right_of(Halfedge el, Point p)
+    private boolean rightOf(Halfedge el, Point p)
     {
         Edge e;
         Site topsite;
 
         boolean right_of_site;
-        boolean above, fast;
+        boolean above;
+        boolean fast;
 
         double dxp;
         double dyp;
@@ -903,10 +910,11 @@ public class Voronoi
 
     private double dist(Site s, Site t)
     {
-        double dx, dy;
+        double dx;
+        double dy;
         dx = s.coord.x - t.coord.x;
         dy = s.coord.y - t.coord.y;
-        return (double) (Math.sqrt(dx * dx + dy * dy));
+        return Math.sqrt(dx * dx + dy * dy);
     }
 
     // create a new site where the HalfEdges el1 and el2 intersect - note that
@@ -1196,7 +1204,8 @@ public class Voronoi
 
     static private class Halfedge
     {
-        Halfedge ELleft, ELright;
+        Halfedge ELleft;
+        Halfedge ELright;
         Edge ELedge;
         boolean deleted;
         int ELpm;
@@ -1225,7 +1234,10 @@ public class Voronoi
 
     static private class Edge
     {
-        double a = 0, b = 0, c = 0;
+        double a = 0;
+        double b = 0;
+        double c = 0;
+
         Site[] ep;  // JH: End points?
         Site[] reg; // JH: Sites this edge bisects?
         int edgenbr;

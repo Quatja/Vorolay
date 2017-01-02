@@ -21,12 +21,11 @@ import quatja.com.vorolay.diagram.VoronoiRegion;
 import quatja.com.vorolay.diagram.VoronoiRegion.VoronoiPoint;
 
 /**
- *
  * The VoronoiView class allows you to display any ({@link android.view.View}) in
  * Voronoi diagram regions.
  *
  * @see <a href="https://en.wikipedia.org/wiki/Voronoi_diagram">Check wiki</a>
- *
+ * <p>
  * Created by quatja
  */
 public class VoronoiView extends ViewGroup {
@@ -46,7 +45,6 @@ public class VoronoiView extends ViewGroup {
      * Use with {@link #setGenerationType} and {@code app:generation_type}
      */
     final static public int GENERATION_TYPE_CUSTOM = 3;
-
 
 
     /*
@@ -85,8 +83,6 @@ public class VoronoiView extends ViewGroup {
     private int mGenerationType;
 
 
-
-
     /**
      * Interface definition for a callback to be invoked when a Voronoi diagram region is clicked
      */
@@ -94,7 +90,8 @@ public class VoronoiView extends ViewGroup {
         /**
          * Callback method to be invoked when a region in this VoronoiView has
          * been clicked.
-         * @param view The region view which was clicked
+         *
+         * @param view     The region view which was clicked
          * @param position The position of the region
          */
         void onClick(View view, int position);
@@ -155,8 +152,6 @@ public class VoronoiView extends ViewGroup {
     }
 
 
-
-
     /**
      * Register a callback to be invoked when a region in the VoronoiView is clicked
      *
@@ -165,8 +160,6 @@ public class VoronoiView extends ViewGroup {
     public void setOnRegionClickListener(OnRegionClickListener listener) {
         this.mRegionClickListener = listener;
     }
-
-
 
 
     /**
@@ -188,9 +181,6 @@ public class VoronoiView extends ViewGroup {
     public boolean isBorderEnabled() {
         return this.mBorderEnabled;
     }
-
-
-
 
 
     /**
@@ -215,8 +205,6 @@ public class VoronoiView extends ViewGroup {
     }
 
 
-
-
     /**
      * Sets the width value for diagram borders
      *
@@ -239,9 +227,6 @@ public class VoronoiView extends ViewGroup {
     }
 
 
-
-
-
     /**
      * Sets border corners to be round
      *
@@ -262,10 +247,6 @@ public class VoronoiView extends ViewGroup {
     public boolean isBorderRoundCornerEnabled() {
         return this.mRoundCornersEnabled;
     }
-
-
-
-
 
 
     /**
@@ -298,9 +279,6 @@ public class VoronoiView extends ViewGroup {
     }
 
 
-
-
-
     /**
      * Regenerate a diagram
      */
@@ -309,7 +287,6 @@ public class VoronoiView extends ViewGroup {
         generateDiagram();
         requestLayout();
     }
-
 
 
     @Override
@@ -469,8 +446,8 @@ public class VoronoiView extends ViewGroup {
         Random rand = new Random();
 
         // Make a number of columns
-        int diff_w = Math.max(mViewWidth/mViewHeight, 1);
-        int diff_h = Math.max(mViewHeight/mViewWidth, 1);
+        int diff_w = Math.max(mViewWidth / mViewHeight, 1);
+        int diff_h = Math.max(mViewHeight / mViewWidth, 1);
         boolean correct = false;
         int temp_col = 0;
         int temp_row = 0;
@@ -497,21 +474,19 @@ public class VoronoiView extends ViewGroup {
         int curY = 0;
         int index = 0;
         for (int i = 0; i < rows; i++) {
-            if (i == rows-1) {
-                if (bal > 0) {
-                    columns += bal;
-                    reg_width = mViewWidth / columns;
-                }
+            if (i == rows - 1 && bal > 0) {
+                columns += bal;
+                reg_width = mViewWidth / columns;
             }
             for (int j = 0; j < columns; j++) {
-                int x1 = rand.nextInt(reg_width/2) + curX + reg_width/4;
-                int y1 = rand.nextInt(reg_height/2) + curY + reg_height/4;
+                int x1 = rand.nextInt(reg_width / 2) + curX + reg_width / 4;
+                int y1 = rand.nextInt(reg_height / 2) + curY + reg_height / 4;
 
                 arrayX[index] = x1;
                 arrayY[index] = y1;
                 index++;
 
-                curX+=reg_width;
+                curX += reg_width;
             }
             curX = 0;
             curY += reg_height;
@@ -530,16 +505,6 @@ public class VoronoiView extends ViewGroup {
             arrayY[i] = point.y;
         }
     }
-
-
-
-
-
-
-
-
-
-
 
 
 }

@@ -16,18 +16,18 @@ import quatja.com.vorolay.GrahamScan;
  * Created by quatja
  */
 public class VoronoiRegion {
-    public List<VoronoiLine> edges = new ArrayList<>();
-    public VoronoiPoint site;
+    List<VoronoiLine> edges = new ArrayList<>();
+    VoronoiPoint site;
     public int tag;
-    public double screen_width, screen_height;
+    double screen_width, screen_height;
 
-    public List<VoronoiPoint> points = new ArrayList<>();
+    private List<VoronoiPoint> points = new ArrayList<>();
     public Path path;
 
     public double width, height;
     public VoronoiPoint center_rect;
 
-    public void prepare() {
+    void prepare() {
 
         initPoints();
         initPath();
@@ -72,9 +72,9 @@ public class VoronoiRegion {
     }
 
     private void prepareWidth() {
-        double min, max;
-        min = points.get(0).x;
-        max = points.get(0).x;
+        double min = points.get(0).x;
+        double max = points.get(0).x;
+
         for (int i = 1; i < points.size(); i++) {
             VoronoiPoint p1 = points.get(i);
             if (min > p1.x)
@@ -88,9 +88,9 @@ public class VoronoiRegion {
     }
 
     private void prepareHeight() {
-        double min, max;
-        min = points.get(0).y;
-        max = points.get(0).y;
+        double min = points.get(0).y;
+        double max = points.get(0).y;
+
         for (int i = 1; i < points.size(); i++) {
             VoronoiPoint p1 = points.get(i);
             if (min > p1.y)
@@ -125,10 +125,10 @@ public class VoronoiRegion {
 
 
 
-    static public class VoronoiLine {
-        public int x1, x2, y1, y2;
+    static class VoronoiLine {
+        int x1, x2, y1, y2;
 
-        public VoronoiLine(int x1, int x2, int y1, int y2) {
+        VoronoiLine(int x1, int x2, int y1, int y2) {
             this.x1 = x1;
             this.x2 = x2;
             this.y1 = y1;

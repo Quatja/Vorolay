@@ -86,7 +86,9 @@ public class SettingsActivity extends AppCompatActivity {
             }
 
             @Override
-            public void onStartTrackingTouch(SeekBar seekBar) {}
+            public void onStartTrackingTouch(SeekBar seekBar) {
+                // empty, because we update the border on stop touch
+            }
 
             @Override
             public void onStopTrackingTouch(SeekBar seekBar) {
