@@ -40,7 +40,7 @@ public class CustomRegionsActivity extends AppCompatActivity {
             button.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Toast.makeText(CustomRegionsActivity.this, "Govno " + textView.getText(), Toast.LENGTH_SHORT).show();
+                    Toast.makeText(CustomRegionsActivity.this, "Element " + textView.getText(), Toast.LENGTH_SHORT).show();
                 }
             });
         }

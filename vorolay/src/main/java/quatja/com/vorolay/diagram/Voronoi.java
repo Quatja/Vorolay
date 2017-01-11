@@ -234,7 +234,7 @@ public class Voronoi
     private void sort(double[] xValuesIn, double[] yValuesIn, int count)
     {
         sites = null;
-        allEdges = new LinkedList<GraphEdge>();
+        allEdges = new LinkedList<>();
 
         nsites = count;
         nvertices = 0;
@@ -256,7 +256,7 @@ public class Voronoi
 
     private void qsort(Site[] sites)
     {
-        List<Site> listSites = new ArrayList<Site>(sites.length);
+        List<Site> listSites = new ArrayList<>(sites.length);
         for (Site s: sites)
         {
             listSites.add(s);

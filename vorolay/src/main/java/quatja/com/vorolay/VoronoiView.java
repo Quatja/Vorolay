@@ -130,7 +130,6 @@ public class VoronoiView extends ViewGroup {
 
         initPaint();
         initDiagram();
-
     }
 
     private void initDiagram() {
@@ -287,6 +286,21 @@ public class VoronoiView extends ViewGroup {
         generateDiagram();
         requestLayout();
     }
+
+
+    /**
+     * Set layer-type HARDWARE or SOFTWARE for the view (true/false).
+     *
+     * @param enabled True if should be hardware acceleration, false if should be software
+     */
+    public void setHardwareAccelerationEnabled(boolean enabled) {
+        if (enabled)
+            setLayerType(View.LAYER_TYPE_HARDWARE, null);
+        else
+            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
+    }
+
+
 
 
     @Override
