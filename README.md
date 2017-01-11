@@ -2,6 +2,7 @@
 <br>
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
 [![](https://jitpack.io/v/Quatja/Vorolay.svg)](https://jitpack.io/#Quatja/Vorolay)
+[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Vorolay-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5001#)
 <br>
 <br>
 VoronoiView is a view (ViewGroup) that allows you to add and display views inside Voronoi diagram regions. [Voronoi diagram] (https://en.wikipedia.org/wiki/Voronoi_diagram)
