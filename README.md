@@ -5,7 +5,7 @@
 [![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Vorolay-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5001)
 <br>
 <br>
-VoronoiView is a view (ViewGroup) that allows you to add and display views inside Voronoi diagram regions. [Voronoi diagram] (https://en.wikipedia.org/wiki/Voronoi_diagram)
+VoronoiView is a view (ViewGroup) that allows you to add and display views inside Voronoi diagram regions. [Voronoi diagram](https://en.wikipedia.org/wiki/Voronoi_diagram)
 
 
 ## Screenshots
