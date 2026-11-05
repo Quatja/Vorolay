@@ -1,7 +1,6 @@
 package quatja.com.voronoitest;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,7 +12,7 @@ import android.widget.Toast;
 import quatja.com.vorolay.VoronoiView;
 
 
-public class CustomRegionsActivity extends AppCompatActivity {
+public class CustomRegionsActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,7 +24,7 @@ public class CustomRegionsActivity extends AppCompatActivity {
         VoronoiView voronoiView = (VoronoiView) findViewById(R.id.voronoi);
 
         for (int i = 0; i < 15; i++) {
-            View view = layoutInflater.inflate(R.layout.item_voronoi_1, null, false);
+            View view = layoutInflater.inflate(R.layout.item_voronoi_1, voronoiView, false);
             voronoiView.addView(view);
 
             int resourceId = getResources().getIdentifier("image"+((i%10)+1), "drawable", this.getPackageName());

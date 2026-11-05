@@ -1,0 +1,7 @@
+<quatja.com.vorolay.VoronoiView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/voronoi"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:show_border="true"
+    app:generation_type="ordered" />

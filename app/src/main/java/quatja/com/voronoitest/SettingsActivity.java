@@ -1,7 +1,6 @@
 package quatja.com.voronoitest;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -12,7 +11,7 @@ import android.widget.Switch;
 import quatja.com.vorolay.VoronoiView;
 
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
 
     private VoronoiView voronoiView;
     private int region_count = 30;
@@ -28,7 +27,7 @@ public class SettingsActivity extends AppCompatActivity {
 
 
         for (int i = 0; i < region_count; i++) {
-            View view = layoutInflater.inflate(R.layout.item_voronoi_2, null, false);
+            View view = layoutInflater.inflate(R.layout.item_voronoi_2, voronoiView, false);
             voronoiView.addView(view);
 
             View layout = view.findViewById(R.id.layout);

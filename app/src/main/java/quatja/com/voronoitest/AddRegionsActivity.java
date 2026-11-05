@@ -1,7 +1,6 @@
 package quatja.com.voronoitest;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -10,7 +9,7 @@ import android.widget.TextView;
 import quatja.com.vorolay.VoronoiView;
 
 
-public class AddRegionsActivity extends AppCompatActivity {
+public class AddRegionsActivity extends BaseActivity {
 
     private LayoutInflater layoutInflater;
     private VoronoiView voronoiView;
@@ -28,7 +27,7 @@ public class AddRegionsActivity extends AppCompatActivity {
         Button mainButton = (Button) findViewById(R.id.main_button);
 
         for (int i = 0; i < count; i++) {
-            View view = layoutInflater.inflate(R.layout.item_voronoi_2, null, false);
+            View view = layoutInflater.inflate(R.layout.item_voronoi_2, voronoiView, false);
             voronoiView.addView(view);
 
             View layout = view.findViewById(R.id.layout);
@@ -45,7 +44,7 @@ public class AddRegionsActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
 
-                View view = layoutInflater.inflate(R.layout.item_voronoi_2, null, false);
+                View view = layoutInflater.inflate(R.layout.item_voronoi_2, voronoiView, false);
 
                 View layout = view.findViewById(R.id.layout);
                 int randomColor = Utils.randomColor();

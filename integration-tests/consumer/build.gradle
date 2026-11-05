@@ -1,0 +1,25 @@
+plugins {
+    id 'com.android.application' version '8.10.1'
+}
+
+android {
+    namespace 'example.vorolay.consumer'
+    compileSdk 36
+    defaultConfig {
+        applicationId 'example.vorolay.consumer'
+        minSdk 17
+        targetSdk 36
+    }
+    buildTypes {
+        release {
+            minifyEnabled true
+            // This application is only a test fixture, so use the debug key for device checks.
+            signingConfig signingConfigs.debug
+            proguardFiles getDefaultProguardFile('proguard-android-optimize.txt')
+        }
+    }
+}
+
+dependencies {
+    implementation 'com.github.Quatja:vorolay:1.1.0'
+}
