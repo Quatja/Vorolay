@@ -148,9 +148,7 @@ public class Voronoi
         addCornerEdges(0, borderMaxY, 0); // left bottom
         addCornerEdges(borderMaxX, borderMaxY, 0); // right bottom
 
-        List<VoronoiRegion> regions = new ArrayList<>();
-        if (sites == null)
-            return regions;
+        List<VoronoiRegion> regions = new ArrayList<>(Collections.nCopies(sites.length, (VoronoiRegion) null));
 
         for (Site site : sites) {
             VoronoiRegion region = new VoronoiRegion();
@@ -167,7 +165,7 @@ public class Voronoi
             }
 
             region.prepare();
-            regions.add(region);
+            regions.set(index, region);
         }
 
         return regions;

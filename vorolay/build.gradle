@@ -1,31 +1,54 @@
-apply plugin: 'com.android.library'
-
-android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
-
-    defaultConfig {
-        minSdkVersion 17
-        targetSdkVersion 24
-        versionCode 1
-        versionName "1.0.1"
-
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
-    }
+plugins {
+    id 'com.android.library'
+    id 'maven-publish'
 }
 
-dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    testCompile 'junit:junit:4.12'
+android {
+    namespace 'quatja.com.vorolay'
+    compileSdk 36
+    defaultConfig {
+        minSdk 17
+    }
+    publishing { singleVariant('release') { withSourcesJar() } }
+}
+
+afterEvaluate {
+    publishing {
+        repositories {
+            maven {
+                name = 'verification'
+                url = rootProject.layout.buildDirectory.dir('verification-repository')
+            }
+        }
+        publications {
+            release(MavenPublication) {
+                from components.release
+                groupId = 'com.github.Quatja'
+                artifactId = 'vorolay'
+                version = System.getenv('JITPACK') == 'true' ? System.getenv('VERSION') : '1.1.0'
+                pom {
+                    name = 'Vorolay'
+                    description = 'An Android ViewGroup that displays child views in Voronoi regions.'
+                    url = 'https://github.com/Quatja/Vorolay'
+                    licenses {
+                        license {
+                            name = 'The Apache License, Version 2.0'
+                            url = 'https://www.apache.org/licenses/LICENSE-2.0.txt'
+                        }
+                    }
+                    developers {
+                        developer {
+                            id = 'Quatja'
+                            name = 'Daniil Jurjev'
+                        }
+                    }
+                    scm {
+                        connection = 'scm:git:https://github.com/Quatja/Vorolay.git'
+                        developerConnection = 'scm:git:ssh://git@github.com/Quatja/Vorolay.git'
+                        url = 'https://github.com/Quatja/Vorolay'
+                    }
+                }
+            }
+        }
+    }
 }

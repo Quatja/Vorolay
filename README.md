@@ -1,131 +1,93 @@
 # Vorolay
 
-[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](http://www.apache.org/licenses/LICENSE-2.0)
-[![](https://jitpack.io/v/Quatja/Vorolay.svg)](https://jitpack.io/#Quatja/Vorolay)
-[![Android Arsenal](https://img.shields.io/badge/Android%20Arsenal-Vorolay-brightgreen.svg?style=flat)](https://android-arsenal.com/details/1/5001)
-<br>
-<br>
-VoronoiView is a view (ViewGroup) that allows you to add and display views inside Voronoi diagram regions. [Voronoi diagram] (https://en.wikipedia.org/wiki/Voronoi_diagram)
+A small Android ViewGroup that displays child views inside Voronoi regions. The library has no runtime dependencies and supports Android 4.2 (API 17) and newer.
 
+## Build and verify
 
-## Screenshots
-![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_1.png "Simple diagram")
-![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_2.png "Settings")
-![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_3.png "List view")
-![alt text](https://github.com/Quatja/Vorolay/raw/master/Screenshots/screenshot_4.png "Custom views")
+Use JDK 17 and Android SDK 36:
 
-
-
-## Import
-Step 1. Add the JitPack repository to your build file
-
-Add it in your root build.gradle at the end of repositories:
-
-	allprojects {
-		repositories {
-			...
-			maven { url 'https://jitpack.io' }
-		}
-	}
-Step 2. Add the dependency
-
-	dependencies {
-	        compile 'com.github.Quatja:Vorolay:1.0.1'
-	}
-
-<br>
----------
-
-## Usage
-
-Add the view into your layout. You can customize it by using xml attributes
-
-```xml
-<quatja.com.vorolay.VoronoiView
-  android:layout_width="match_parent"
-  android:layout_height="match_parent"
-  android:layout_margin="50dp"
-  custom:border_color="@color/gray"
-  custom:border_round="false"
-  custom:border_width="5"    />
+```shell
+./gradlew :app:assembleDebug :vorolay:assembleRelease :app:lintDebug :vorolay:lintDebug
+./gradlew :app:connectedDebugAndroidTest  # requires a device or emulator, API 21+
+./gradlew :vorolay:publishReleasePublicationToVerificationRepository
+./gradlew -p integration-tests/consumer assembleRelease
 ```
 
-Then add your views to the VoronoiView
+The release AAR is written to `vorolay/build/outputs/aar/`. The publication task writes the AAR, sources and Maven metadata to `build/verification-repository/`. The independent consumer resolves the published artifact from that repository and builds a minified release with R8. Its test APK is signed with the debug key solely for device checks.
 
-```java
-VoronoiView voronoiView = (VoronoiView) findViewById(R.id.voronoi);
-LayoutInflater layoutInflater = getLayoutInflater();
-for (int i = 0; i < 15; i++) {
-    View view = layoutInflater.inflate(R.layout.item_voronoi, null, false);
-    voronoiView.addView(view);
+## Installation
+
+The current source has not yet been published as a new release; existing JitPack versions refer to older code. To use this checkout immediately, run the publication task above and add the resulting repository to the consuming project's `settings.gradle.kts`, replacing the example path with the absolute path to this checkout:
+
+```kotlin
+dependencyResolutionManagement {
+    repositories {
+        google()
+        mavenCentral()
+        maven { url = uri("/absolute/path/to/Vorolay/build/verification-repository") }
+    }
 }
 ```
 
-Now VoronoiView children will be displayed inside the diagram regions.
+Then add to the consuming module's `build.gradle.kts`:
 
+```kotlin
+dependencies {
+    implementation("com.github.Quatja:vorolay:1.1.0")
+}
+```
 
+Alternatively, include the `vorolay` source module and use `implementation(project(":vorolay"))`. The checked-in consumer under `integration-tests/consumer` is a complete example of the local Maven approach.
 
+### JitPack release
 
-<br>
----------
+The repository includes `jitpack.yml` and a Maven publication for JitPack. After committing and pushing the changes, create and push a new Git tag, request its build on [JitPack](https://jitpack.io/#Quatja/Vorolay), and verify the result before advertising it. For a multi-module JitPack build, the intended dependency is `com.github.Quatja.Vorolay:vorolay:<tag>` with `maven { url = uri("https://jitpack.io") }` in the consumer's repositories. This route has not been verified until JitPack builds the new tag. Do not reuse a version already published with different contents.
 
-## Customization
+## Usage
 
-Attributes which you can use in customization purposes
+Place the view in a layout:
 
-| attr            | value/example  | description                                   |
-| --------------- |:--------------:| ---------------------------------------------:|
-| show_border     | true           | shows or hides each region borders            |
-| border_color    | #fff           | sets all borders color                        |
-| border_width    | 5              | sets borders width                            |
-| border_round    | true           | makes border corners round                    |
-| generation_type | random         | sets different points generation behavior     |
+```xml
+<quatja.com.vorolay.VoronoiView
+    android:id="@+id/voronoi"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:show_border="true"
+    app:border_color="#ffffff"
+    app:border_width="3.5"
+    app:generation_type="random" />
+```
 
+Declare `xmlns:app="http://schemas.android.com/apk/res-auto"` on the root element. Add children normally with `addView`; regions update when children or container size change. `GONE` children do not occupy a region. `refresh()` generates a new diagram.
 
-### Generation types
-| type            | description                                                               |
-| --------------- | -------------------------------------------------------------------------:|
-| random          | VoronoiView generates a random point positions inside the view bounds.    |
-| ordered         | points are placed like a table - rows and columns.                        |
-| custom          | points will be placed in user defined positions.                          |
+Use `setGenerationType` to choose `GENERATION_TYPE_RANDOM`, `GENERATION_TYPE_ORDERED`, or `GENERATION_TYPE_CUSTOM`. For custom mode, call `setCustomPoints` with one distinct point per visible child, in child order. Coordinates are pixels relative to the content area inside padding. Set the points and generation type before the next layout. The region click listener receives the child view and its index in the ViewGroup; clickable children handle their own clicks.
 
-These attributes are available programmatically too.
-<br>
+Custom points must be within the content bounds; invalid points or a mismatched count cause `IllegalArgumentException` during layout. Call view methods on the Android UI thread.
 
+For a fixed set of children, custom points can also be supplied as a string-array resource:
 
+```xml
+<quatja.com.vorolay.VoronoiView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:generation_type="custom"
+    app:custom_points="@array/voronoi_points">
+    <!-- Three child views -->
+</quatja.com.vorolay.VoronoiView>
+```
 
----------
+```xml
+<string-array name="voronoi_points">
+    <item>0.25, 0.25</item>
+    <item>0.75, 0.25</item>
+    <item>0.50, 0.75</item>
+</string-array>
+```
 
-## Warning
-Children visibility GONE doesn't work <br>
-Do not use tags for the children <br>
+Each XML entry is an `x, y` pair of numbers from 0 to 1, inclusive, relative to the content area inside padding. The points scale when the content size changes. They map in order to children that are not `GONE` (including `INVISIBLE` children), and must be distinct. Malformed entries and out-of-range coordinates are rejected when the view is created; the count and uniqueness are checked during layout. Calling `setCustomPoints`, including with `null`, replaces the XML points; the method continues to use pixel coordinates.
 
-
-
-
----------
-
-## Acknowledgements
-Steven Fortune - algorithm author <br>
-Zhenyu Pan - Forutne algorithm Java version <br>
-Bart Kiers - Graham Scan realization <br>
-
-
----------
+Border attributes are `show_border`, `border_color`, `border_width` (pixels), and `border_round`. Corresponding methods are available on `VoronoiView`.
 
 ## License
-```xml
-Copyright 2016 Daniil Jurjev
 
-Licensed under the Apache License, Version 2.0 (the "License");
-you may not use this file except in compliance with the License.
-You may obtain a copy of the License at
-
-   http://www.apache.org/licenses/LICENSE-2.0
-
-Unless required by applicable law or agreed to in writing, software
-distributed under the License is distributed on an "AS IS" BASIS,
-WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-See the License for the specific language governing permissions and
-limitations under the License.
-```
+Apache License 2.0; see [LICENSE](LICENSE). The original Voronoi algorithm includes additional attribution and permission notices in its source file.
