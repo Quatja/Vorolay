@@ -2,12 +2,11 @@ package quatja.com.voronoitest;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.Button;
 
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends BaseActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +48,9 @@ public class MainActivity extends AppCompatActivity {
                 startActivity(intent);
             }
         });
+
+        findViewById(R.id.btn_custom_points).setOnClickListener(v ->
+                startActivity(new Intent(MainActivity.this, CustomPointsActivity.class)));
 
         Button btnAddRegion = (Button) findViewById(R.id.btn_add_region);
         btnAddRegion.setOnClickListener(new View.OnClickListener() {

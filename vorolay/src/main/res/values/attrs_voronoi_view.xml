@@ -4,6 +4,7 @@
         <attr name="border_color" format="color" />
         <attr name="border_width" format="float" />
         <attr name="border_round" format="boolean" />
+        <attr name="custom_points" format="reference" />
 
         <attr name="generation_type">
             <enum name="random" value="1" />

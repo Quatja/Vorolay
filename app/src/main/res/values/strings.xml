@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">Voronoi test</string>
+    <string name="custom_points_title">Custom points</string>
+    <string name="custom_points_description">The five white dots are arranged like the five on a die. Each colored area belongs to its nearest point.</string>
 </resources>

@@ -38,7 +38,14 @@
             android:layout_width="200dp"
             android:layout_height="70dp"
             android:layout_gravity="center_horizontal"
-            android:text="Custom" />
+            android:text="Custom views" />
+
+        <Button
+            android:id="@+id/btn_custom_points"
+            android:layout_width="200dp"
+            android:layout_height="70dp"
+            android:layout_gravity="center_horizontal"
+            android:text="@string/custom_points_title" />
 
         <Button
             android:id="@+id/btn_add_region"

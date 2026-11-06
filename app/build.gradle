@@ -1,30 +1,22 @@
-apply plugin: 'com.android.application'
+plugins { id 'com.android.application' }
 
 android {
-    compileSdkVersion 24
-    buildToolsVersion "24.0.2"
+    namespace 'quatja.com.voronoitest'
+    compileSdk 36
     defaultConfig {
-        applicationId "quatja.com.voronoitest"
-        minSdkVersion 17
-        targetSdkVersion 24
+        applicationId 'quatja.com.voronoitest'
+        minSdk 21
+        targetSdk 36
         versionCode 1
-        versionName "1.0"
-        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
-    }
-    buildTypes {
-        release {
-            minifyEnabled false
-            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-        }
+        versionName '1.0'
+        testInstrumentationRunner 'androidx.test.runner.AndroidJUnitRunner'
     }
 }
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
-        exclude group: 'com.android.support', module: 'support-annotations'
-    })
-    compile 'com.android.support:appcompat-v7:24.2.1'
-    testCompile 'junit:junit:4.12'
-    compile project(":vorolay")
+    implementation platform('org.jetbrains.kotlin:kotlin-bom:1.9.25')
+    implementation 'androidx.appcompat:appcompat:1.7.1'
+    implementation project(':vorolay')
+    androidTestImplementation 'androidx.test:runner:1.6.2'
+    androidTestImplementation 'androidx.test.ext:junit:1.2.1'
 }

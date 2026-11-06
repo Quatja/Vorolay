@@ -6,13 +6,13 @@ import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.CornerPathEffect;
 import android.graphics.Paint;
-import android.graphics.Region;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Random;
 
@@ -65,8 +65,12 @@ public class VoronoiView extends ViewGroup {
     private Paint p;
 
     private Voronoi mVoronoi;
-    private List<VoronoiRegion> mRegions;
+    private List<VoronoiRegion> mRegions = Collections.emptyList();
+    private final List<View> mVisibleChildren = new ArrayList<>();
+    private final List<View> mLayoutChildren = new ArrayList<>();
+    private boolean mDiagramDirty = true;
     private List<VoronoiRegion.VoronoiPoint> mCustomPoints;
+    private boolean mCustomPointsRelative;
     private OnRegionClickListener mRegionClickListener;
 
     private int mRegionsCount;
@@ -92,7 +96,7 @@ public class VoronoiView extends ViewGroup {
          * been clicked.
          *
          * @param view     The region view which was clicked
-         * @param position The position of the region
+         * @param position The child index in this ViewGroup
          */
         void onClick(View view, int position);
     }
@@ -126,14 +130,43 @@ public class VoronoiView extends ViewGroup {
         mBorderWidth = a.getFloat(R.styleable.VoronoiView_border_width, DEF_BORDER_WIDTH);
         mRoundCornersEnabled = a.getBoolean(R.styleable.VoronoiView_border_round, DEF_BORDER_CORNERS_ROUND);
         mGenerationType = a.getInt(R.styleable.VoronoiView_generation_type, DEF_GENERATION_TYPE);
+        int customPointsResource = a.getResourceId(R.styleable.VoronoiView_custom_points, 0);
         a.recycle();
+
+        if (customPointsResource != 0) {
+            mCustomPoints = parseRelativePoints(getResources().getStringArray(customPointsResource));
+            mCustomPointsRelative = true;
+        }
 
         initPaint();
         initDiagram();
     }
 
     private void initDiagram() {
-        mVoronoi = new Voronoi(mDistanceBetweenSites);
+        mVoronoi = new Voronoi(0);
+    }
+
+    private static List<VoronoiPoint> parseRelativePoints(String[] entries) {
+        List<VoronoiPoint> points = new ArrayList<>(entries.length);
+        for (int i = 0; i < entries.length; i++) {
+            String[] coordinates = entries[i].split(",", -1);
+            if (coordinates.length != 2) {
+                throw new IllegalArgumentException("custom_points entry " + i + " must contain x, y");
+            }
+            double x;
+            double y;
+            try {
+                x = Double.parseDouble(coordinates[0].trim());
+                y = Double.parseDouble(coordinates[1].trim());
+            } catch (NumberFormatException e) {
+                throw new IllegalArgumentException("custom_points entry " + i + " must contain numeric x, y", e);
+            }
+            if (Double.isNaN(x) || Double.isNaN(y) || x < 0 || x > 1 || y < 0 || y > 1) {
+                throw new IllegalArgumentException("custom_points entry " + i + " coordinates must be between 0 and 1");
+            }
+            points.add(new VoronoiPoint(x, y));
+        }
+        return points;
     }
 
     private void initPaint() {
@@ -169,7 +202,7 @@ public class VoronoiView extends ViewGroup {
     public void enableBorders(boolean enable) {
         this.mBorderEnabled = enable;
 
-        requestLayout();
+        invalidate();
     }
 
     /**
@@ -191,7 +224,7 @@ public class VoronoiView extends ViewGroup {
         this.mBorderColor = colorId;
 
         initPaint();
-        requestLayout();
+        invalidate();
     }
 
     /**
@@ -213,7 +246,7 @@ public class VoronoiView extends ViewGroup {
         this.mBorderWidth = width;
 
         initPaint();
-        requestLayout();
+        invalidate();
     }
 
     /**
@@ -235,7 +268,7 @@ public class VoronoiView extends ViewGroup {
         this.mRoundCornersEnabled = enable;
 
         initPaint();
-        requestLayout();
+        invalidate();
     }
 
     /**
@@ -255,7 +288,7 @@ public class VoronoiView extends ViewGroup {
      */
     public void setGenerationType(int points_type) {
         this.mGenerationType = points_type;
-        requestLayout();
+        refresh();
     }
 
     /**
@@ -271,10 +304,14 @@ public class VoronoiView extends ViewGroup {
     /**
      * Sets the user-defined diagram sites if the generation type ({@link #setGenerationType}) is {@link #GENERATION_TYPE_CUSTOM}
      *
+     * Coordinates are pixels relative to the content area. This replaces any points supplied in XML.
+     *
      * @param custom_points user-defined sites
      */
     public void setCustomPoints(List<VoronoiPoint> custom_points) {
-        this.mCustomPoints = custom_points;
+        this.mCustomPoints = custom_points == null ? null : new ArrayList<>(custom_points);
+        this.mCustomPointsRelative = false;
+        refresh();
     }
 
 
@@ -282,9 +319,9 @@ public class VoronoiView extends ViewGroup {
      * Regenerate a diagram
      */
     public void refresh() {
-        countRegions();
-        generateDiagram();
+        mDiagramDirty = true;
         requestLayout();
+        invalidate();
     }
 
 
@@ -306,95 +343,102 @@ public class VoronoiView extends ViewGroup {
     @Override
     protected void onSizeChanged(int width, int height, int oldw, int oldh) {
         super.onSizeChanged(width, height, oldw, oldh);
-        Log.v("View", "view: " + width + ", " + height);
+        mDiagramDirty = true;
+    }
 
-        mViewWidth = width;
-        mViewHeight = height;
-
-        generateDiagram();
+    @Override
+    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
+        int width = getSuggestedMinimumWidth();
+        int height = getSuggestedMinimumHeight();
+        for (int i = 0; i < getChildCount(); i++) {
+            View child = getChildAt(i);
+            if (child.getVisibility() == GONE) continue;
+            measureChild(child, widthMeasureSpec, heightMeasureSpec);
+            width = Math.max(width, child.getMeasuredWidth() + getPaddingLeft() + getPaddingRight());
+            height = Math.max(height, child.getMeasuredHeight() + getPaddingTop() + getPaddingBottom());
+        }
+        setMeasuredDimension(resolveSize(width, widthMeasureSpec), resolveSize(height, heightMeasureSpec));
     }
 
     @Override
     protected void onLayout(boolean changed, int l, int t, int r, int b) {
-
+        List<View> visible = mLayoutChildren;
+        visible.clear();
         for (int i = 0; i < getChildCount(); i++) {
             View child = getChildAt(i);
-            child.setTag(i);
+            if (child.getVisibility() != GONE) visible.add(child);
+        }
+        int width = Math.max(0, getWidth() - getPaddingLeft() - getPaddingRight());
+        int height = Math.max(0, getHeight() - getPaddingTop() - getPaddingBottom());
+        if (!visible.equals(mVisibleChildren) || width != mViewWidth || height != mViewHeight) {
+            mDiagramDirty = true;
+        }
+        mVisibleChildren.clear();
+        mVisibleChildren.addAll(visible);
+        mRegionsCount = visible.size();
+        mViewWidth = width;
+        mViewHeight = height;
+        if (mDiagramDirty) {
+            generateDiagram();
+            mDiagramDirty = false;
+        }
+        for (int i = 0; i < mRegions.size(); i++) {
+            View child = visible.get(i);
             VoronoiRegion region = mRegions.get(i);
-            child.measure(
-                    MeasureSpec.makeMeasureSpec((int) region.width, MeasureSpec.AT_MOST),
-                    MeasureSpec.makeMeasureSpec((int) region.height, MeasureSpec.AT_MOST)
-            );
-            int curWidth = child.getMeasuredWidth();
-            int curHeight = child.getMeasuredHeight();
-
-            //set children into the center of the region rectangle
-            child.layout(
-                    (int) region.center_rect.x - curWidth / 2,
-                    (int) region.center_rect.y - curHeight / 2,
-                    (int) region.center_rect.x + curWidth,
-                    (int) region.center_rect.y + curHeight
-            );
+            int availableWidth = Math.max(0, (int) region.width);
+            int availableHeight = Math.max(0, (int) region.height);
+            LayoutParams params = child.getLayoutParams();
+            child.measure(getChildMeasureSpec(MeasureSpec.makeMeasureSpec(availableWidth, MeasureSpec.EXACTLY), 0, params.width),
+                    getChildMeasureSpec(MeasureSpec.makeMeasureSpec(availableHeight, MeasureSpec.EXACTLY), 0, params.height));
+            int left = getPaddingLeft() + (int) region.center_rect.x - child.getMeasuredWidth() / 2;
+            int top = getPaddingTop() + (int) region.center_rect.y - child.getMeasuredHeight() / 2;
+            child.layout(left, top, left + child.getMeasuredWidth(), top + child.getMeasuredHeight());
         }
     }
-
-
-    @Override
-    protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
-        super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-
-        int width = MeasureSpec.getSize(widthMeasureSpec);
-        int height = MeasureSpec.getSize(heightMeasureSpec);
-        this.setMeasuredDimension(width, height);
-
-        countRegions();
-    }
-
 
     @Override
     protected boolean drawChild(Canvas canvas, View child, long drawingTime) {
-        Integer index = (Integer) child.getTag();
+        int index = mVisibleChildren.indexOf(child);
+        if (index < 0 || index >= mRegions.size()) return false;
         VoronoiRegion region = mRegions.get(index);
-
-        // firstly clip and draw children
-        canvas.clipPath(region.path, Region.Op.REPLACE);
+        int save = canvas.save();
+        canvas.translate(getPaddingLeft(), getPaddingTop());
+        canvas.clipPath(region.path);
+        canvas.translate(-getPaddingLeft(), -getPaddingTop());
         boolean result = super.drawChild(canvas, child, drawingTime);
-
-        // then draw borders
-        if (mBorderEnabled)
-            canvas.drawPath(region.path, p);
-
-        // draw site
-//        canvas.drawCircle((float)region.site.x, (float)region.site.y, 10, p);
-
+        canvas.translate(getPaddingLeft(), getPaddingTop());
+        if (mBorderEnabled) canvas.drawPath(region.path, p);
+        canvas.restoreToCount(save);
         return result;
     }
 
-
     @Override
     public boolean onTouchEvent(MotionEvent event) {
-        if (mRegionClickListener != null) {
-
-            if (event.getAction() == MotionEvent.ACTION_UP) {
-                for (int i = 0; i < mRegions.size(); i++) {
-                    VoronoiRegion region = mRegions.get(i);
-                    if (region.contains(event.getX(), event.getY())) {
-                        mRegionClickListener.onClick(this, i);
-                        return false;
-                    }
+        if (mRegionClickListener == null) return super.onTouchEvent(event);
+        if (event.getActionMasked() == MotionEvent.ACTION_UP) {
+            float x = event.getX() - getPaddingLeft();
+            float y = event.getY() - getPaddingTop();
+            for (int i = 0; i < mRegions.size(); i++) {
+                if (mRegions.get(i).contains(x, y)) {
+                    performClick();
+                    View child = mVisibleChildren.get(i);
+                    mRegionClickListener.onClick(child, indexOfChild(child));
+                    break;
                 }
             }
         }
-
         return true;
     }
 
-    private void countRegions() {
-        mRegionsCount = getChildCount();
+    @Override
+    public boolean performClick() {
+        super.performClick();
+        return true;
     }
 
     private void generateDiagram() {
-        if (mViewWidth == 0 || mViewHeight == 0) {
+        if (mViewWidth == 0 || mViewHeight == 0 || mRegionsCount == 0) {
+            mRegions = Collections.emptyList();
             return;
         }
 
@@ -430,93 +474,67 @@ public class VoronoiView extends ViewGroup {
      */
 
     private void generateRandomPoints(double[] arrayX, double[] arrayY) {
-        Random rand = new Random();
-
-        int i = 0;
-        while (i < mRegionsCount) {
-            int x1 = rand.nextInt(mViewWidth + 1);
-            int y1 = rand.nextInt(mViewHeight + 1);
-
-            boolean good = true;
-            for (int j = 0; j < arrayX.length; j++) {
-                double x2 = arrayX[j];
-                double y2 = arrayY[j];
-
-                double dist = Math.sqrt(Math.pow(x1 - x2, 2) + Math.pow(y1 - y2, 2));
-                if (dist < mDistanceBetweenSites)
-                    good = false;
+        Random random = new Random();
+        for (int i = 0; i < mRegionsCount; i++) {
+            boolean found = false;
+            for (int attempt = 0; attempt < 100; attempt++) {
+                double x = random.nextDouble() * mViewWidth;
+                double y = random.nextDouble() * mViewHeight;
+                boolean valid = true;
+                for (int j = 0; j < i; j++) {
+                    if (Math.hypot(x - arrayX[j], y - arrayY[j]) < mDistanceBetweenSites) {
+                        valid = false;
+                        break;
+                    }
+                }
+                if (valid) {
+                    arrayX[i] = x;
+                    arrayY[i] = y;
+                    found = true;
+                    break;
+                }
             }
-
-            if (good) {
-                arrayX[i] = x1;
-                arrayY[i] = y1;
-                i++;
+            if (!found) {
+                generateOrderedPoints(arrayX, arrayY);
+                return;
             }
         }
     }
 
-
     private void generateOrderedPoints(double[] arrayX, double[] arrayY) {
-        Random rand = new Random();
-
-        // Make a number of columns
-        int diff_w = Math.max(mViewWidth / mViewHeight, 1);
-        int diff_h = Math.max(mViewHeight / mViewWidth, 1);
-        boolean correct = false;
-        int temp_col = 0;
-        int temp_row = 0;
-        while (!correct) {
-            temp_col += diff_w;
-            temp_row += diff_h;
-            if (temp_col * temp_row >= mRegionsCount)
-                correct = true;
-        }
-
-
-        // Make a number of rows
-        int columns = temp_col;
-        int bal = mRegionsCount % columns;
-        int rows = mRegionsCount / columns;
-
-        // Region width/height
-        int reg_width = mViewWidth / columns;
-        int reg_height = mViewHeight / rows;
-
-
-        // Generate points
-        int curX = 0;
-        int curY = 0;
-        int index = 0;
-        for (int i = 0; i < rows; i++) {
-            if (i == rows - 1 && bal > 0) {
-                columns += bal;
-                reg_width = mViewWidth / columns;
-            }
-            for (int j = 0; j < columns; j++) {
-                int x1 = rand.nextInt(reg_width / 2) + curX + reg_width / 4;
-                int y1 = rand.nextInt(reg_height / 2) + curY + reg_height / 4;
-
-                arrayX[index] = x1;
-                arrayY[index] = y1;
-                index++;
-
-                curX += reg_width;
-            }
-            curX = 0;
-            curY += reg_height;
+        int columns = Math.max(1, (int) Math.ceil(Math.sqrt((double) mRegionsCount * mViewWidth / mViewHeight)));
+        columns = Math.min(columns, mRegionsCount);
+        int rows = (mRegionsCount + columns - 1) / columns;
+        for (int i = 0; i < mRegionsCount; i++) {
+            arrayX[i] = (i % columns + 0.5) * mViewWidth / columns;
+            arrayY[i] = (i / columns + 0.5) * mViewHeight / rows;
         }
     }
 
     private void generateCustomPoints(double[] arrayX, double[] arrayY) {
 
         if (mCustomPoints == null || mCustomPoints.size() != mRegionsCount) {
-            throw new RuntimeException("The custom points count is not equals to a regions count");
+            throw new IllegalArgumentException("Custom point count must match the number of visible children");
         }
 
         for (int i = 0; i < mCustomPoints.size(); i++) {
             VoronoiRegion.VoronoiPoint point = mCustomPoints.get(i);
-            arrayX[i] = point.x;
-            arrayY[i] = point.y;
+            if (point == null) {
+                throw new IllegalArgumentException("Custom points must be inside the content bounds");
+            }
+            double x = mCustomPointsRelative ? point.x * mViewWidth : point.x;
+            double y = mCustomPointsRelative ? point.y * mViewHeight : point.y;
+            if (Double.isNaN(x) || Double.isNaN(y)
+                    || x < 0 || x > mViewWidth || y < 0 || y > mViewHeight) {
+                throw new IllegalArgumentException("Custom points must be inside the content bounds");
+            }
+            for (int j = 0; j < i; j++) {
+                if (arrayX[j] == x && arrayY[j] == y) {
+                    throw new IllegalArgumentException("Custom points must be distinct");
+                }
+            }
+            arrayX[i] = x;
+            arrayY[i] = y;
         }
     }
 
